@@ -1,13 +1,15 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import {getPhotos} from "../actions/PageActions";
+import {connect} from "react-redux";
 
-export class Page extends React.Component {
+class Page extends React.Component {
   onBtnClick = e => {
     const year = +e.currentTarget.innerText
-    this.props.getPhotos(year) // setYear -> getPhotos
+    this.props.getPhotosAction(year) // setYear -> getPhotos
   }
   renderTemplate = () => {
-    const { photos, isFetching, error } = this.props
+    const { photos, isFetching, error } = this.props.page
     if (error) {
       return <p className="error">Во время загрузки фото произошла ошибка</p>
     }
@@ -27,7 +29,8 @@ export class Page extends React.Component {
   }
 
   render() {
-    const { year, photos } = this.props
+    const { year, photos } = this.props.page
+
     return (
       <div className="ib page">
         <p>
@@ -56,10 +59,20 @@ export class Page extends React.Component {
   }
 }
 
-Page.propTypes = {
-  year: PropTypes.number.isRequired,
-  photos: PropTypes.array.isRequired,
-  getPhotos: PropTypes.func.isRequired,
-  error: PropTypes.string,
-  isFetching: PropTypes.bool.isRequired,
+
+const mapStateToProps = store => {
+  return {
+    page: store.page,
+  }
 }
+
+const mapDispatchToProps = dispatch => {
+  return {
+    getPhotosAction: year => dispatch(getPhotos(year)),
+  }
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Page)
